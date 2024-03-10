@@ -10,7 +10,7 @@ export default class TasksController {
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (isReqUser(req.user)) {
-        const task = await this.tasksService.create({ createdBy: req.user.id, ...req.body })
+        const task = await this.tasksService.create({ createdBy: req.user.id, ...req.body, file: req.file?.filename })
         res.status(201).json(task)
       }
     } catch (error) {

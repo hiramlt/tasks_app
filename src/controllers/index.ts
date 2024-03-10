@@ -1,4 +1,4 @@
-import { tasksService, usersService } from '../services'
+import { tasksService, usersService } from '../services/index'
 import TasksController from './tasks.controller'
 import UsersController from './users.controller'
 

@@ -28,6 +28,10 @@ export default class TasksService {
       throw new NotFoundException('Responsible user not found')
     }
 
+    if (result.data.file) {
+      result.data.file = '/files/' + result.data.file
+    }
+
     return await this.tasksRepository.create(result.data)
   }
 

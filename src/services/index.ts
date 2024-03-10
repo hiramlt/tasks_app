@@ -1,4 +1,4 @@
-import { tasksRepository, usersRepository, commentsRepository } from '../repositories'
+import { tasksRepository, usersRepository, commentsRepository } from '../repositories/index'
 import TasksService from './tasks.service'
 import UsersService from './users.service'
 

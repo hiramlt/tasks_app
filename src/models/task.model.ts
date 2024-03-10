@@ -16,7 +16,7 @@ export const taskSchema = z.object({
     required_error: 'dueDate value is required',
     invalid_type_error: 'Invalid date'
   }),
-  responsibleId: z.number({
+  responsibleId: z.coerce.number({
     required_error: 'responsibleId is required',
     invalid_type_error: 'responsibleId must be a numeric value'
   }).int({ message: 'responsibleId must be an integer' })

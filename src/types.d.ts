@@ -8,6 +8,9 @@ export type CreateCommentInput = z.infer<typeof commentSchema>
 export type CreateTaskInput = z.infer<typeof taskSchema>
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>
 
+export type DestinationCallback = (error: Error | null, destination: string) => void
+export type FileNameCallback = (error: Error | null, filename: string) => void
+
 export type ReqUser = {
   id: number
   name: string
