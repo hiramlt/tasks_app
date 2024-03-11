@@ -16,9 +16,15 @@ export default class TasksRepository {
     })
   }
 
-  async get (): Promise<Task[] | null> {
+  async get (userId: number): Promise<Task[] | null> {
     return await this.prismaClient.task.findMany({
-      where: { isPublic: true },
+      where: {
+        OR: [
+          { isPublic: true },
+          { responsibleId: userId },
+          { createdBy: userId }
+        ]
+      },
       include: {
         comments:
         { select: { id: true, content: true, createdBy: true, createdAt: true } }
@@ -26,9 +32,18 @@ export default class TasksRepository {
     })
   }
 
-  async getById (taskId: number): Promise<Task | null> {
+  async getById (taskId: number, userId: number): Promise<Task | null> {
     return await this.prismaClient.task.findUnique({
-      where: { id: taskId, AND: { isPublic: true } },
+      where: {
+        id: taskId,
+        AND: {
+          OR: [
+            { isPublic: true },
+            { responsibleId: userId },
+            { createdBy: userId }
+          ]
+        }
+      },
       include: {
         comments:
         { select: { id: true, content: true, createdBy: true, createdAt: true } }

@@ -20,8 +20,10 @@ export default class TasksController {
 
   get = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const tasks = await this.tasksService.get()
-      res.status(200).json(tasks)
+      if (isReqUser(req.user)) {
+        const tasks = await this.tasksService.get(req.user.id)
+        res.status(200).json(tasks)
+      }
     } catch (error) {
       next(error)
     }
@@ -30,8 +32,10 @@ export default class TasksController {
   getById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params
     try {
-      const task = await this.tasksService.getById(id)
-      res.status(200).json(task)
+      if (isReqUser(req.user)) {
+        const task = await this.tasksService.getById(id, req.user.id)
+        res.status(200).json(task)
+      }
     } catch (error) {
       next(error)
     }
@@ -40,8 +44,10 @@ export default class TasksController {
   update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params
     try {
-      const updatedTask = await this.tasksService.update(id, req.body)
-      res.status(200).json(updatedTask)
+      if (isReqUser(req.user)) {
+        const updatedTask = await this.tasksService.update(id, req.body, req.user.id)
+        res.status(200).json(updatedTask)
+      }
     } catch (error) {
       next(error)
     }
@@ -50,8 +56,10 @@ export default class TasksController {
   delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params
     try {
-      await this.tasksService.delete(id)
-      res.status(204).end()
+      if (isReqUser(req.user)) {
+        await this.tasksService.delete(id, req.user.id)
+        res.status(204).end()
+      }
     } catch (error) {
       next(error)
     }
@@ -73,8 +81,10 @@ export default class TasksController {
   deleteComment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id, cid } = req.params
     try {
-      const task = await this.tasksService.deleteComment(id, cid)
-      res.status(200).json(task)
+      if (isReqUser(req.user)) {
+        const task = await this.tasksService.deleteComment(id, cid, req.user.id)
+        res.status(200).json(task)
+      }
     } catch (error) {
       next(error)
     }

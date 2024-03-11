@@ -8,7 +8,6 @@ import type { Request } from 'express'
 import type { User } from '@prisma/client'
 import type { ReqUser, DestinationCallback, FileNameCallback } from '../types'
 import { InvalidDataException } from './errors'
-// import { InvalidDataException } from './errors'
 
 const filename = url.fileURLToPath(import.meta.url)
 export const dirname = path.dirname(filename)
@@ -23,7 +22,7 @@ export const isValidPassword = (password: string, userPassword: string): boolean
 
 export const createToken = (user: User): string => {
   const payload = { id: user.id, name: user.name, email: user.email }
-  return jwt.sign(payload, config.jwtSecret, { expiresIn: '15m' })
+  return jwt.sign(payload, config.jwtSecret, { expiresIn: '5m' })
 }
 
 export const validateToken = async (token: string): Promise<boolean | jwt.JwtPayload | string | undefined> => {
@@ -41,11 +40,7 @@ export const validateToken = async (token: string): Promise<boolean | jwt.JwtPay
 const allowedFilesMimeTypes = [
   'image/jpeg',
   'image/png',
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  'application/pdf'
 ]
 
 export const uploadFile = multer({
@@ -55,11 +50,11 @@ export const uploadFile = multer({
     },
     filename: function (req: Request, file: Express.Multer.File, cb: FileNameCallback) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-      cb(null, uniqueSuffix + '-' + file.originalname)
+      cb(null, uniqueSuffix + '-' + file.originalname.replaceAll(' ', ''))
     }
   }),
   limits: {
-    fieldSize: 10000000
+    fieldSize: 5000000
   },
   fileFilter: (req: Request, file: Express.Multer.File, cb) => {
     if (allowedFilesMimeTypes.includes(file.mimetype)) {

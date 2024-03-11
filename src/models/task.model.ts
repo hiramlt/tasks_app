@@ -22,7 +22,10 @@ export const taskSchema = z.object({
   }).int({ message: 'responsibleId must be an integer' })
     .nonnegative({ message: 'responsibleId must be a positive value' }),
   file: z.string().optional(),
-  isPublic: z.boolean({ invalid_type_error: 'isPubic must be a boolean' }).optional(),
+  isPublic: z.union([
+    z.boolean(),
+    z.string().toLowerCase().transform((x) => x === 'true').pipe(z.boolean())
+  ]).optional(),
   createdBy: z.number().int({ message: 'createdBy is required' })
     .nonnegative({ message: 'responsibleId must be a positive value' })
 })

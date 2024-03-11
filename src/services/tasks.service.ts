@@ -5,6 +5,7 @@ import type UsersRepository from '../repositories/users.repository'
 import { taskSchema, updateTaskSchema } from '../models/task.model'
 import { commentSchema } from '../models/comment.model'
 import { InvalidDataException, NotFoundException } from '../utils/errors'
+import { unlinkSync } from 'fs'
 
 export default class TasksService {
   constructor (
@@ -35,19 +36,19 @@ export default class TasksService {
     return await this.tasksRepository.create(result.data)
   }
 
-  async get (): Promise<Task[] | null> {
-    return await this.tasksRepository.get()
+  async get (userId: number): Promise<Task[] | null> {
+    return await this.tasksRepository.get(userId)
   }
 
-  async getById (taskId: string): Promise<Task | null> {
-    const task = await this.tasksRepository.getById(+taskId)
+  async getById (taskId: string, userId: number): Promise<Task | null> {
+    const task = await this.tasksRepository.getById(+taskId, userId)
     if (!task) {
       throw new NotFoundException('Task not found')
     }
     return task
   }
 
-  async update (taskId: string, task: unknown): Promise<Task | null> {
+  async update (taskId: string, task: unknown, userId: number): Promise<Task | null> {
     if (!task || Object.keys(task).length === 0) {
       throw new InvalidDataException('Missing task data')
     }
@@ -58,7 +59,7 @@ export default class TasksService {
       throw new InvalidDataException(`Invalid task data: [${errors.toString()}]`)
     }
 
-    const taskExists = await this.tasksRepository.getById(+taskId)
+    const taskExists = await this.tasksRepository.getById(+taskId, userId)
     if (!taskExists) {
       throw new NotFoundException('Task not found')
     }
@@ -73,34 +74,37 @@ export default class TasksService {
     return await this.tasksRepository.update(+taskId, result.data)
   }
 
-  async delete (taskId: string): Promise<Task | null> {
-    const task = await this.tasksRepository.getById(+taskId)
+  async delete (taskId: string, userId: number): Promise<Task | null> {
+    const task = await this.tasksRepository.getById(+taskId, userId)
     if (!task) {
       throw new NotFoundException('Task not found')
     }
+    if (task.file) {
+      const filePath = task.file.replace('/files/', 'public/')
+      unlinkSync(filePath)
+    }
+
     return await this.tasksRepository.delete(+taskId)
   }
 
-  async addComment (taskId: string, content: string, createdBy: number): Promise<Task | null> {
-    const task = await this.tasksRepository.getById(+taskId)
+  async addComment (taskId: string, content: string, userId: number): Promise<Task | null> {
+    const task = await this.tasksRepository.getById(+taskId, userId)
     if (!task) {
       throw new NotFoundException('Task not found')
     }
 
-    const result = commentSchema.safeParse({ content, taskId: Number(taskId), createdBy })
+    const result = commentSchema.safeParse({ content, taskId: Number(taskId), createdBy: userId })
     if (!result.success) {
-      console.log(result.error)
-
       const errors = result.error.errors.map((err) => { return err.message })
       throw new InvalidDataException(`Invalid comment data: [${errors.toString()}]`)
     }
 
     await this.commentsRepository.create(result.data)
-    return await this.tasksRepository.getById(+taskId)
+    return await this.tasksRepository.getById(+taskId, userId)
   }
 
-  async deleteComment (taskId: string, commentId: string): Promise<Task | null> {
-    const task = await this.tasksRepository.getById(+taskId)
+  async deleteComment (taskId: string, commentId: string, userId: number): Promise<Task | null> {
+    const task = await this.tasksRepository.getById(+taskId, userId)
     if (!task) {
       throw new NotFoundException('Task not found')
     }
@@ -110,6 +114,6 @@ export default class TasksService {
       throw new NotFoundException('Comment not found')
     }
 
-    return await this.tasksRepository.getById(+taskId)
+    return await this.tasksRepository.getById(+taskId, userId)
   }
 }

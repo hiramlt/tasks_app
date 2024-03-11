@@ -2,4 +2,6 @@ node_modules
 dist
 prisma/dev.*
 prisma/migrations
+public/*
+!public/.gitkeep
 .env
