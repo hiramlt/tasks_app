@@ -15,13 +15,3 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
     next()
   })(req, res, next)
 }
-
-// export const roleMiddleware = (allowedRoles: string[]) => (req: Request & { user: ReqUser }, res: Response, next: NextFunction): void => {
-//   if (!req.user) {
-//     throw new UnauthorizedException('Not authenticated')
-//   }
-//   if (!allowedRoles.includes(req.user?.role)) {
-//     throw new UnauthorizedException('No permissions')
-//   }
-//   next()
-// }

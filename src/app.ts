@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser'
 import config from './config/config'
 import { errorHandler } from './utils/errorhandler'
 import { initPassport } from './config/passport.config'
+import { swaggerServe, swaggerSetup } from './config/docs.config'
 import { authMiddleware } from './utils/middlewares'
 
 import tasksRouter from './routers/tasks.router'
@@ -21,6 +22,7 @@ app.use(cookieParser(config.cookieSecret))
 app.use(passport.initialize())
 
 app.use('/files', authMiddleware, express.static(path.resolve('public')))
+app.use('/api-docs', swaggerServe, swaggerSetup)
 app.use('/api/tasks', tasksRouter)
 app.use('/api/auth', authRouter)
 app.use(errorHandler)

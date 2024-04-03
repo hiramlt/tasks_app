@@ -1,0 +1,114 @@
+paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/registerUser'
+      responses:
+        201:
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid user data
+        500:
+          description: Internal server error
+
+  /api/auth/login:
+    post:
+      summary: Login in application
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/loginUser'
+      responses:
+        200:
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Status of the request
+        400:
+          description: Invalid user data
+        500:
+          description: Internal server error
+
+  /api/auth/profile:
+    get:
+      summary: Get user profile
+      tags:
+        - Auth
+      responses:
+        200:
+          description: User profile obtained
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Not authenticated
+        500:
+          description: Internal server error
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          description: User identifier
+        name:
+          type: string
+          description: User full name
+        email:
+          type: string
+          description: User email
+        password:
+          type: string
+          description: User password
+  requestBodies:
+    registerUser:
+      type: object
+      properties:
+        name:
+          type: string
+          description: User full name
+        email:
+          type: string
+          description: User email
+        password:
+          type: string
+          description: User password
+      example:
+        name: User example
+        email: mail@example.com
+        password: Password123$
+    loginUser:
+      type: object
+      properties:
+        email:
+          type: string
+          description: User email
+        password:
+          type: string
+          description: User password
+      example:
+        email: mail@example.com
+        password: Password123$

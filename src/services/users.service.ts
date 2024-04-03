@@ -16,6 +16,11 @@ export default class UsersService {
       throw new InvalidDataException(`Invalid user data: [${errors.toString()}]`)
     }
 
+    const userExists = await this.usersRepository.getByEmail(result.data.email)
+    if (userExists) {
+      throw new InvalidDataException('User already exists')
+    }
+
     result.data.password = createHash(result.data.password)
     return await this.usersRepository.create(result.data)
   }
